@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+	<SwitchPreferenceCompat
+		app:key="sex"
+		app:title="Sex" />
+	<Preference
+		app:key="open-keyboard-setting"
+		app:summary=""
+		app:title="Open keyboard setting" />
+
+	<Preference
+		app:key="open-keyboard-switcher"
+		app:summary=""
+		app:title="Open keyboard switcher" />
+	<EditTextPreference
+		app:key="text"
+		app:title="Test input" />
+</PreferenceScreen>

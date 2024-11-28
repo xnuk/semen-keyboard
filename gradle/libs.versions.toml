@@ -1,0 +1,12 @@
+[versions]
+android-application = "8.7.2"
+kotlin = "2.1.0"
+coreKtx = "1.15.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-preference-ktx = { group = 'androidx.preference', name = 'preference-ktx', version = "1.2.1" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "android-application" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
