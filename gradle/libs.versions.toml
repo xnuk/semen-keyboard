@@ -6,6 +6,7 @@ coreKtx = "1.15.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-preference-ktx = { group = 'androidx.preference', name = 'preference-ktx', version = "1.2.1" }
+simple-bencode = { module = "com.github.lanlinju:simple-bencode", version = "1.0.5" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }

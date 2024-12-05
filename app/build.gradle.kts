@@ -34,4 +34,5 @@ android {
 dependencies {
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.preference.ktx)
+	implementation(libs.simple.bencode)
 }
