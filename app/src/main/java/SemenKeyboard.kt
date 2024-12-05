@@ -7,6 +7,39 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.GridLayout
+import com.lanlinju.bencode.Bencode
+
+
+data class Key(val label: Char, val value: String, val layoutOptions: String)
+data class Keyboard(val engine: String, val layers: List<List<List<Key>>>)
+
+fun keySimple(value: Char): Key =
+	Key(label = value, value = value.toString(), layoutOptions = "")
+
+fun keySimpleRow(value: CharSequence): List<Key> {
+	val ret = mutableListOf<Key>()
+	for (char in value.chars()) {
+		ret.add(keySimple(char.toChar()))
+	}
+	return ret
+}
+
+val defaultKeyboard = Keyboard(
+	engine = "Direct", layers = listOf(
+		listOf(
+			keySimpleRow("qwfpbjluy;"),
+			keySimpleRow("arstgmneio"),
+			keySimpleRow("zxcdvkh,./"),
+		),
+		listOf(
+			keySimpleRow("QWFPBJLUY:"),
+			keySimpleRow("ARSTGMNEIO"),
+			keySimpleRow("ZXCDVKH<>?"),
+		)
+	)
+)
+
+val defaultKeyboardEncoded = Bencode.encodeToString(defaultKeyboard)
 
 class SemenKeyboard : InputMethodService() {
 	private var imm: InputMethodManager? = null
@@ -45,7 +78,7 @@ class SemenKeyboard : InputMethodService() {
 
 		grid.addView(
 			Button(this).apply {
-				text = "Dick"
+				text = defaultKeyboardEncoded
 				setTag(keyLabel, "Dick")
 				setOnClickListener(onClick)
 			},
