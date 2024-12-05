@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 
@@ -34,7 +34,9 @@ class DickSettingFragment : PreferenceFragmentCompat() {
 	}
 }
 
-class DickSetting : AppCompatActivity() {
+class DickSetting : FragmentActivity() {
+	// AppCompatActivity: 이쁘게
+	// FragmentActivity: 되긴 되는데 덜 이쁘게
 	@SuppressLint("ResourceType")
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
