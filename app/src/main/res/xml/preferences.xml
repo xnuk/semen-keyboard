@@ -3,16 +3,19 @@
 	<SwitchPreferenceCompat
 		app:key="sex"
 		app:title="Sex" />
-	<Preference
-		app:key="open-keyboard-setting"
-		app:summary=""
-		app:title="Open keyboard setting" />
 
-	<Preference
-		app:key="open-keyboard-switcher"
-		app:summary=""
-		app:title="Open keyboard switcher" />
-	<EditTextPreference
-		app:key="text"
-		app:title="Test input" />
+	<PreferenceCategory app:title="For Testing">
+		<Preference
+			app:key="open-keyboard-setting"
+			app:title="Open keyboard setting" />
+		<Preference
+			app:key="open-keyboard-switcher"
+			app:title="Open keyboard switcher" />
+	</PreferenceCategory>
+	<PreferenceCategory app:title="Import/Export">
+		<EditTextPreference
+			app:key="layout-config"
+			app:summary="Copy or paste layout config with bencode-formatted text"
+			app:title="Edit layout config" />
+	</PreferenceCategory>
 </PreferenceScreen>
