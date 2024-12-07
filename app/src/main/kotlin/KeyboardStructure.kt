@@ -1,16 +1,23 @@
 package kr.xnu.keyboard.semen
 
+import kotlinx.serialization.Serializable
 
-data class Key(val label: Char, val value: String, val layoutOptions: String)
+@Serializable
+data class Key(
+	val value: String,
+	val label: String = value,
+	val options: String? = null,
+)
+
+@Serializable
 data class Keyboard(val engine: String, val layers: List<List<List<Key>>>)
 
-private fun keySimple(value: Char): Key =
-	Key(label = value, value = value.toString(), layoutOptions = "")
+private fun keySimple(value: String): Key = Key(value = value)
 
 private fun keySimpleRow(value: CharSequence): List<Key> {
 	val ret = mutableListOf<Key>()
 	for (char in value.chars()) {
-		ret.add(keySimple(char.toChar()))
+		ret.add(keySimple(char.toChar().toString()))
 	}
 	return ret
 }

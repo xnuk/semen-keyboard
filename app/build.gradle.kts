@@ -1,6 +1,7 @@
 plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.kotlin.android)
+	alias(libs.plugins.serialization)
 }
 
 android {
@@ -34,7 +35,7 @@ android {
 dependencies {
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.preference.ktx)
-	implementation(libs.simple.bencode)
+	implementation(libs.json)
 
-	testImplementation(libs.kotlin.test)
+	testImplementation(libs.test)
 }

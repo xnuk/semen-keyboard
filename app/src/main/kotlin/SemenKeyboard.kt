@@ -7,10 +7,10 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.GridLayout
-import com.lanlinju.bencode.Bencode
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
-
-val defaultKeyboardEncoded = Bencode.encodeToString(defaultKeyboard)
+val defaultKeyboardEncoded = Json.encodeToString(defaultKeyboard)
 
 class SemenKeyboard : InputMethodService() {
 	private var imm: InputMethodManager? = null

@@ -2,14 +2,14 @@
 android-application = "8.7.3"
 kotlin = "2.1.0"
 coreKtx = "1.15.0"
-kotlinTest = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-preference-ktx = { group = 'androidx.preference', name = 'preference-ktx', version = "1.2.1" }
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlinTest" }
-simple-bencode = { module = "com.github.lanlinju:simple-bencode", version = "1.0.5" }
+test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
