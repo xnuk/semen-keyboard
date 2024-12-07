@@ -14,7 +14,7 @@ import androidx.preference.PreferenceFragmentCompat
 class DickSettingFragment : PreferenceFragmentCompat() {
 	override fun onCreatePreferences(
 		savedInstanceState: Bundle?,
-		rootKey: String?
+		rootKey: String?,
 	) {
 		setPreferencesFromResource(R.xml.preferences, rootKey)
 
@@ -40,13 +40,11 @@ class DickSetting : FragmentActivity() {
 	@SuppressLint("ResourceType")
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		val frame = FrameLayout(this).apply {
-			id = R.id.frame
-		}
+		val frame = FrameLayout(this).apply { id = R.id.frame }
 		setContentView(frame)
-		supportFragmentManager.beginTransaction().replace(
-			frame.id,
-			DickSettingFragment()
-		).commit()
+		supportFragmentManager
+			.beginTransaction()
+			.replace(frame.id, DickSettingFragment())
+			.commit()
 	}
 }

@@ -23,7 +23,8 @@ private fun keySimpleRow(value: CharSequence): List<Key> {
 }
 
 val defaultKeyboard = Keyboard(
-	engine = "Direct", layers = listOf(
+	engine = "Direct",
+	layers = listOf(
 		listOf(
 			keySimpleRow("qwfpbjluy;"),
 			keySimpleRow("arstgmneio"),
@@ -33,6 +34,6 @@ val defaultKeyboard = Keyboard(
 			keySimpleRow("QWFPBJLUY:"),
 			keySimpleRow("ARSTGMNEIO"),
 			keySimpleRow("ZXCDVKH<>?"),
-		)
-	)
+		),
+	),
 )
