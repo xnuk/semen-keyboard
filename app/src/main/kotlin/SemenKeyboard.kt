@@ -55,10 +55,12 @@ fun keyboardView(
 		var c = 0
 		for (v in row) {
 			grid.addView(
+				// TODO: reset button theme and apply custom
 				Button(context).apply {
 					text = v.label
 					setTag(keyValueTag, v.value)
 					setOnClickListener(onClickListener)
+					setPadding(0, 0, 0, 0)
 					if ((r + c) % 2 == 0) {
 						setBackgroundColor(colorBg)
 						setTextColor(colorText)
