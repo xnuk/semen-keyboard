@@ -54,10 +54,8 @@ class DickSettingFragment : PreferenceFragmentCompat() {
 				}
 				view.selectAll()
 			}
-
 	}
 }
-
 
 class DickSetting : FragmentActivity() {
 	// AppCompatActivity: 이쁘게

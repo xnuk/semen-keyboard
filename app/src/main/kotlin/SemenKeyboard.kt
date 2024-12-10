@@ -52,10 +52,8 @@ fun keyboardView(
 
 	var r = 0
 	for (row in keyboard.layers[0]) {
-
 		var c = 0
 		for (v in row) {
-
 			grid.addView(
 				Button(context).apply {
 					text = v.label
