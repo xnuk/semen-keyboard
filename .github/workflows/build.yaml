@@ -10,10 +10,11 @@ jobs:
         java-version: 17
         distribution: temurin
     - uses: gradle/actions/setup-gradle@v4
-    - run: gradle assembleDebug
+
+    - run: gradle assembleRelease
     - uses: actions/upload-artifact@v4
       with:
-        name: apk
-        path: ./app/build/outputs/apk/
+        name: release
+        path: ./app/build/outputs/apk/release/app-release-unsigned.apk
         if-no-files-found: error
-        retention-days: 10
+        retention-days: 5
