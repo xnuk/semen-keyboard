@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<item name="frame" type="id" />
-	<item name="key_label" type="id" />
+	<item name="key_value" type="id" />
 	<item name="prostate" type="id" />
 </resources>
