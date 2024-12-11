@@ -25,4 +25,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Semen Keyboard"
-include(":app")
+include(":")
