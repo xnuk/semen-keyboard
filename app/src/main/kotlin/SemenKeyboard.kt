@@ -3,12 +3,11 @@ package kr.xnu.keyboard.semen
 import android.content.Context
 import android.content.SharedPreferences
 import android.inputmethodservice.InputMethodService
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.GridLayout
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.preference.PreferenceManager
 import kotlinx.serialization.encodeToString
@@ -24,24 +23,18 @@ fun keyboardView(
 	onClick: (msg: String) -> Unit,
 ): View {
 
-	val firstLayer = keyboard.layers[0]
-	val firstLayerMaxCol = firstLayer.maxOf { it.size }
-	val colorText = context.getColor(R.color.white)
-	val colorBg = context.getColor(R.color.black)
+	val colorText = context.getColor(R.color.black)
+	val colorBg = context.getColor(R.color.white)
 
-	val grid = GridLayout(context).apply {
-		layoutParams = GridLayout.LayoutParams().apply {
-			width = LayoutParams.MATCH_PARENT
-			height = LayoutParams.MATCH_PARENT
-		}
-		rowCount = firstLayer.size
-		columnCount = firstLayerMaxCol
-		useDefaultMargins = false
+	val grid = LinearLayout(context).apply {
+		layoutParams = LinearLayout.LayoutParams(
+			LayoutParams.MATCH_PARENT,
+			LayoutParams.MATCH_PARENT
+		)
+		orientation = LinearLayout.VERTICAL
 
 		setBackgroundColor(colorBg)
 	}
-
-	Log.d("dick", "${firstLayer.size} $firstLayerMaxCol")
 
 	val onClickListener = View.OnClickListener {
 		val msg = it.getTag(keyValueTag) as? String
@@ -50,37 +43,37 @@ fun keyboardView(
 		}
 	}
 
-	var r = 0
-	for (row in keyboard.layers[0]) {
-		var c = 0
-		for (v in row) {
-			grid.addView(
+	for (keyRow in keyboard.layers[0]) {
+		val row = LinearLayout(context).apply {
+			layoutParams = LinearLayout.LayoutParams(
+				LayoutParams.MATCH_PARENT,
+				LayoutParams.WRAP_CONTENT
+			)
+			orientation = LinearLayout.HORIZONTAL
+		}
+
+		for (key in keyRow) {
+			row.addView(
 				// TODO: reset button theme and apply custom
 				Button(context).apply {
-					text = v.label
-					setTag(keyValueTag, v.value)
+					text = key.label
+					setTag(keyValueTag, key.value)
 					setOnClickListener(onClickListener)
 					setPadding(0, 0, 0, 0)
-					if ((r + c) % 2 == 0) {
-						setBackgroundColor(colorBg)
-						setTextColor(colorText)
-					} else {
-						setBackgroundColor(colorText)
-						setTextColor(colorBg)
-					}
-
+					setBackgroundColor(colorBg)
+					setTextColor(colorText)
 				},
-				GridLayout.LayoutParams(
-					GridLayout.spec(r, 1f),
-					GridLayout.spec(c, 1f),
-				).apply {
-					width = 0
-				},
+				LinearLayout.LayoutParams(
+					0, LayoutParams.MATCH_PARENT, key.size
+				),
 			)
-			c += 1
 		}
-		r += 1
+
+		grid.addView(row)
 	}
+
+
+
 
 	return grid
 }
