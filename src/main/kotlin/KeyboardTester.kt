@@ -12,7 +12,7 @@ class KeyboardTester : ComponentActivity() {
 		super.onCreate(savedInstanceState)
 		val k = keyboardView(this, defaultKeyboard) {
 			toastBefore?.cancel()
-			val t = Toast.makeText(this, it, Toast.LENGTH_SHORT)
+			val t = Toast.makeText(this, "$it", Toast.LENGTH_SHORT)
 			t.show()
 			toastBefore = t
 		}

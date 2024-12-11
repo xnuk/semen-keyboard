@@ -3,9 +3,32 @@ package kr.xnu.keyboard.semen
 import kotlinx.serialization.Serializable
 
 @Serializable
+enum class Command {
+	Backspace
+}
+
+@Serializable
+sealed class KeyVal() {
+	@Serializable
+	class Str(val str: String) : KeyVal()
+
+	@Serializable
+	class TO(val layer: Int) : KeyVal()
+
+	@Serializable
+	class LT(val short: KeyVal, val long: KeyVal) : KeyVal()
+
+	@Serializable
+	class OneShot(val layer: Int) : KeyVal()
+
+	@Serializable
+	class Cmd(val cmd: Command) : KeyVal()
+}
+
+@Serializable
 data class Key(
-	val value: String,
-	val label: String = value,
+	val label: String,
+	val value: KeyVal = KeyVal.Str(label),
 	val subLabel: String? = null,
 	val size: Float = 1f,
 	val options: String? = null,
@@ -23,11 +46,7 @@ data class Keyboard(val engine: Engine, val layers: List<List<List<Key>>>)
 private fun keySimpleRow(values: String): List<Key> {
 	val ret = mutableListOf<Key>()
 	for (value in values.chars()) {
-		ret.add(
-			Key(
-				value.toChar().toString()
-			)
-		)
+		ret.add(Key(value.toChar().toString()))
 	}
 	return ret
 }
@@ -37,44 +56,86 @@ val defaultKeyboard =
 		listOf(
 			keySimpleRow("1234567890"),
 			mutableListOf<Key>().apply {
-				add(Key(value = "q", size = 1.5f))
+				add(Key("q", size = 1.5f))
 				addAll(keySimpleRow("wfpbjlu"))
-				add(Key(value = "y", size = 1.5f))
+				add(Key("y", size = 1.5f))
 			},
 			keySimpleRow("arstgmneio"),
 			mutableListOf<Key>().apply {
-				add(Key(value = "shift", label = "^", size = 1.5f))
+				add(
+					Key(
+						label = "^",
+						value = KeyVal.OneShot(1),
+						size = 1.5f
+					)
+				)
 				addAll(keySimpleRow("zxcdvkh"))
-				add(Key(value = "bksp", label = "<=", size = 1.5f))
+				add(
+					Key(
+						label = "<=",
+						value = KeyVal.Cmd(Command.Backspace),
+						size = 1.5f
+					)
+				)
 			},
 			mutableListOf<Key>().apply {
-				add(Key(value = "기호", size = 1.5f))
-				add(Key(value = "한영", size = 1.5f))
-				add(Key(value = " ", label = "space", size = 1.5f))
-				add(Key(value = "."))
-				add(Key(value = "\n", label = "enter", size = 1.5f))
+				add(Key(label = "기호", value = KeyVal.TO(4), size = 1.5f))
+				add(Key(label = "한영", value = KeyVal.TO(8), size = 1.5f))
+				add(
+					Key(
+						label = "space",
+						value = KeyVal.Str(" "),
+						size = 1.5f
+					)
+				)
+				add(Key("."))
+				add(
+					Key(
+						label = "enter",
+						value = KeyVal.Str("\n"),
+						size = 1.5f
+					)
+				)
 			}
 		),
 
 		listOf(
 			keySimpleRow("1234567890"),
 			mutableListOf<Key>().apply {
-				add(Key(value = "Q", size = 1.5f))
+				add(Key("Q", size = 1.5f))
 				addAll(keySimpleRow("WFPBJLU"))
-				add(Key(value = "Y", size = 1.5f))
+				add(Key("Y", size = 1.5f))
 			},
 			keySimpleRow("ARSTGMNEIO"),
 			mutableListOf<Key>().apply {
-				add(Key(value = "shift", label = "^", size = 1.5f))
+				add(Key(label = "^^", value = KeyVal.TO(2), size = 1.5f))
 				addAll(keySimpleRow("ZXCDVKH"))
-				add(Key(value = "bksp", label = "<=", size = 1.5f))
+				add(
+					Key(
+						label = "<=",
+						value = KeyVal.Cmd(Command.Backspace),
+						size = 1.5f
+					)
+				)
 			},
 			mutableListOf<Key>().apply {
-				add(Key(value = "기호", size = 1.5f))
-				add(Key(value = "한영", size = 1.5f))
-				add(Key(value = " ", label = "space", size = 3f))
-				add(Key(value = "."))
-				add(Key(value = "\n", label = "enter", size = 1.5f))
+				add(Key(label = "기호", value = KeyVal.TO(4), size = 1.5f))
+				add(Key(label = "한영", value = KeyVal.TO(8), size = 1.5f))
+				add(
+					Key(
+						label = "space",
+						value = KeyVal.Str(" "),
+						size = 1.5f
+					)
+				)
+				add(Key("."))
+				add(
+					Key(
+						label = "enter",
+						value = KeyVal.Str("\n"),
+						size = 1.5f
+					)
+				)
 			}
 		)
 	))

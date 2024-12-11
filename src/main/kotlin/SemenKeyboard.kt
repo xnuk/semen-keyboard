@@ -20,7 +20,7 @@ val keyValueTag = R.id.key_value
 fun keyboardView(
 	context: Context,
 	keyboard: Keyboard,
-	onClick: (msg: String) -> Unit,
+	onClick: (msg: KeyVal) -> Unit,
 ): View {
 
 	val colorText = context.getColor(R.color.black)
@@ -37,7 +37,7 @@ fun keyboardView(
 	}
 
 	val onClickListener = View.OnClickListener {
-		val msg = it.getTag(keyValueTag) as? String
+		val msg = it.getTag(keyValueTag) as? KeyVal
 		if (msg != null) {
 			onClick(msg)
 		}
@@ -112,7 +112,22 @@ class SemenKeyboard : InputMethodService() {
 	override fun onCreateInputView(): View {
 		keyboard = getLayoutConfig()
 		return keyboardView(this, keyboard) {
-			currentInputConnection.commitText(it, 1)
+			val ic = currentInputConnection
+			when (it) {
+				is KeyVal.Str -> ic.commitText(it.str, 1)
+				is KeyVal.Cmd -> when (it.cmd) {
+					Command.Backspace -> {
+						val selected = ic.getSelectedText(0)
+						if (selected == null || selected.isEmpty()) {
+							ic.deleteSurroundingText(1, 0)
+						} else {
+							ic.commitText("", 1)
+						}
+					}
+				}
+
+				else -> {}
+			}
 		}
 	}
 }
