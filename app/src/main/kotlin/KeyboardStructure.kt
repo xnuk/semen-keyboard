@@ -36,7 +36,11 @@ val defaultKeyboard =
 	Keyboard(engine = Engine("direct", mapOf()), layers = listOf(
 		listOf(
 			keySimpleRow("1234567890"),
-			keySimpleRow("qwfpbjluy"),
+			mutableListOf<Key>().apply {
+				add(Key(value = "q", size = 1.5f))
+				addAll(keySimpleRow("wfpbjlu"))
+				add(Key(value = "y", size = 1.5f))
+			},
 			keySimpleRow("arstgmneio"),
 			mutableListOf<Key>().apply {
 				add(Key(value = "shift", label = "^", size = 1.5f))
@@ -46,15 +50,19 @@ val defaultKeyboard =
 			mutableListOf<Key>().apply {
 				add(Key(value = "기호", size = 1.5f))
 				add(Key(value = "한영", size = 1.5f))
-				add(Key(value = "space", size = 1.5f))
+				add(Key(value = " ", label = "space", size = 1.5f))
 				add(Key(value = "."))
-				add(Key(value = "enter", size = 1.5f))
+				add(Key(value = "\n", label = "enter", size = 1.5f))
 			}
 		),
 
 		listOf(
 			keySimpleRow("1234567890"),
-			keySimpleRow("QWFPBJLUY"),
+			mutableListOf<Key>().apply {
+				add(Key(value = "Q", size = 1.5f))
+				addAll(keySimpleRow("WFPBJLU"))
+				add(Key(value = "Y", size = 1.5f))
+			},
 			keySimpleRow("ARSTGMNEIO"),
 			mutableListOf<Key>().apply {
 				add(Key(value = "shift", label = "^", size = 1.5f))
@@ -64,9 +72,9 @@ val defaultKeyboard =
 			mutableListOf<Key>().apply {
 				add(Key(value = "기호", size = 1.5f))
 				add(Key(value = "한영", size = 1.5f))
-				add(Key(value = "space", size = 3f))
+				add(Key(value = " ", label = "space", size = 3f))
 				add(Key(value = "."))
-				add(Key(value = "enter", size = 1.5f))
+				add(Key(value = "\n", label = "enter", size = 1.5f))
 			}
 		)
 	))
