@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.Toast
-import androidx.fragment.app.FragmentActivity
+import androidx.activity.ComponentActivity
 
-class KeyboardTester : FragmentActivity() {
+class KeyboardTester : ComponentActivity() {
 	private var toastBefore: Toast? = null
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
