@@ -22,7 +22,6 @@ fun keyboardView(
 	keyboard: Keyboard,
 	onClick: (msg: KeyVal) -> Unit,
 ): View {
-
 	val colorText = context.getColor(R.color.black)
 	val colorBg = context.getColor(R.color.white)
 
@@ -71,9 +70,6 @@ fun keyboardView(
 
 		grid.addView(row)
 	}
-
-
-
 
 	return grid
 }
