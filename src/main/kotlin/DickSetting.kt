@@ -11,8 +11,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
-import androidx.preference.EditTextPreference
-import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import kotlinx.serialization.json.Json
@@ -22,38 +20,60 @@ class DickSettingFragment : PreferenceFragmentCompat() {
 		savedInstanceState: Bundle?,
 		rootKey: String?,
 	) {
-
-		setPreferencesFromResource(R.xml.preferences, rootKey)
-
-		findPreference<Preference>("open-keyboard")
-			?.setOnPreferenceClickListener {
-				startActivity(
-					Intent(context, KeyboardTester::class.java)
-				)
-				true
-			}
-
-		findPreference<Preference>("open-keyboard-setting")
-			?.setOnPreferenceClickListener {
-				startActivity(Intent(ACTION_INPUT_METHOD_SETTINGS))
-				true
-			}
-
-		findPreference<Preference>("open-keyboard-switcher")
-			?.setOnPreferenceClickListener {
-				val imm =
-					context?.getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-				imm?.showInputMethodPicker()
-				true
-			}
-
-		findPreference<EditTextPreference>(LAYOUT_KEY)
-			?.setOnBindEditTextListener { view ->
-				if (view.text.toString().trim() == "") {
-					view.setText(defaultKeyboardEncoded)
+		renderPref {
+			preference("Open keyboard setting") {
+				setOnPreferenceClickListener {
+					startActivity(Intent(ACTION_INPUT_METHOD_SETTINGS))
+					true
 				}
-				view.selectAll()
 			}
+
+			preference("Open keyboard switcher") {
+				setOnPreferenceClickListener {
+					val imm =
+						context.getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+					imm?.showInputMethodPicker()
+					true
+				}
+			}
+
+			category("For Testing") {
+				preference("Open the keyboard") {
+					setOnPreferenceClickListener {
+						startActivity(
+							Intent(
+								context,
+								KeyboardTester::class.java
+							)
+						)
+						true
+					}
+				}
+			}
+
+			category("Import/Export") {
+				editText("Edit layout config") {
+					key = LAYOUT_KEY
+					summary =
+						"Copy or paste layout config with JSON-formatted text"
+					setOnBindEditTextListener { view ->
+						if (view.text.toString().trim() == "") {
+							view.setText(defaultKeyboardEncoded)
+						}
+						view.selectAll()
+					}
+				}
+			}
+
+			category("Some Setting") {
+				editText("Change key height (dp)") {
+					key = "key-height"
+					setDefaultValue(40)
+
+					setOnBindEditTextListener { view -> view.selectAll() }
+				}
+			}
+		}
 	}
 }
 
