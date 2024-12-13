@@ -41,7 +41,7 @@ inline fun PrefParent.category(
 ) {
 	val category = PreferenceCategory(context)
 	addPref(category)
-	title.run(category::setTitle)
+	category.title = title
 	val np = PrefParent(context) { category.addPreference(it) }
 	builder(np, category)
 }
