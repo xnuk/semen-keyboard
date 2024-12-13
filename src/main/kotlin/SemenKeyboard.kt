@@ -12,6 +12,8 @@ import android.widget.Toast
 import androidx.preference.PreferenceManager
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.Int
+import kotlin.math.roundToInt
 
 val defaultKeyboardEncoded = Json.encodeToString(defaultKeyboard)
 const val LAYOUT_KEY = "layout-config"
@@ -20,10 +22,16 @@ val keyValueTag = R.id.key_value
 fun keyboardView(
 	context: Context,
 	keyboard: Keyboard,
+	layer: Int = 0,
 	onClick: (msg: KeyVal) -> Unit,
 ): View {
 	val colorText = context.getColor(R.color.black)
 	val colorBg = context.getColor(R.color.white)
+	val setting = PreferenceManager.getDefaultSharedPreferences(context)
+
+	val dp = context.resources.displayMetrics.density
+	val keyHeight =
+		(setting.getString("key-height", "")?.toIntOrNull() ?: 20) * dp
 
 	val grid = LinearLayout(context).apply {
 		layoutParams = LinearLayout.LayoutParams(
@@ -42,11 +50,11 @@ fun keyboardView(
 		}
 	}
 
-	for (keyRow in keyboard.layers[0]) {
+	for (keyRow in keyboard.layers[layer]) {
 		val row = LinearLayout(context).apply {
 			layoutParams = LinearLayout.LayoutParams(
 				LayoutParams.MATCH_PARENT,
-				LayoutParams.WRAP_CONTENT
+				(keyHeight * dp).roundToInt()
 			)
 			orientation = LinearLayout.HORIZONTAL
 		}
@@ -103,27 +111,37 @@ class SemenKeyboard : InputMethodService() {
 		pref = PreferenceManager.getDefaultSharedPreferences(this)
 	}
 
+	fun handleEvent(item: KeyVal) {
+		val ic = currentInputConnection
+		when (item) {
+			is KeyVal.Str -> ic.commitText(item.str, 1)
+			is KeyVal.Cmd -> when (item.cmd) {
+				Command.Backspace -> {
+					val selected = ic.getSelectedText(0)
+					if (selected == null || selected.isEmpty()) {
+						ic.deleteSurroundingText(1, 0)
+					} else {
+						ic.commitText("", 1)
+					}
+				}
+			}
+
+			is KeyVal.TO -> {
+				setInputView(
+					keyboardView(this, keyboard, item.layer) {
+						handleEvent(it)
+					}
+				)
+			}
+
+			else -> {}
+		}
+	}
+
 	// TODO: put keyboard in activity - to debug
 	// TODO: maybe we should not use grid?
 	override fun onCreateInputView(): View {
 		keyboard = getLayoutConfig()
-		return keyboardView(this, keyboard) {
-			val ic = currentInputConnection
-			when (it) {
-				is KeyVal.Str -> ic.commitText(it.str, 1)
-				is KeyVal.Cmd -> when (it.cmd) {
-					Command.Backspace -> {
-						val selected = ic.getSelectedText(0)
-						if (selected == null || selected.isEmpty()) {
-							ic.deleteSurroundingText(1, 0)
-						} else {
-							ic.commitText("", 1)
-						}
-					}
-				}
-
-				else -> {}
-			}
-		}
+		return keyboardView(this, keyboard) { handleEvent(it) }
 	}
 }

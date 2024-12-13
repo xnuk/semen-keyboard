@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS
+import android.text.InputType
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -68,9 +69,12 @@ class DickSettingFragment : PreferenceFragmentCompat() {
 			category("Some Setting") {
 				editText("Change key height (dp)") {
 					key = "key-height"
-					setDefaultValue(40)
+					setDefaultValue(20)
 
-					setOnBindEditTextListener { view -> view.selectAll() }
+					setOnBindEditTextListener { view ->
+						view.inputType = InputType.TYPE_CLASS_NUMBER
+						view.selectAll()
+					}
 				}
 			}
 		}
