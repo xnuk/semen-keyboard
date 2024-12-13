@@ -84,8 +84,6 @@ class SemenKeyboard : InputMethodService() {
 		}
 	}
 
-	// TODO: put keyboard in activity - to debug
-	// TODO: maybe we should not use grid?
 	override fun onCreateInputView(): View {
 		keyboard = getLayoutConfig()
 		return keyboardView(this, keyboard) { handleEvent(it) }
