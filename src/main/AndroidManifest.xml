@@ -3,9 +3,9 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<application
-		android:icon="@android:drawable/ic_media_ff"
+		android:icon="@drawable/xnuk_rainbow"
 		android:label="@string/app_name"
-		android:roundIcon="@android:drawable/ic_media_ff"
+		android:roundIcon="@drawable/xnuk_rainbow"
 		android:theme="@style/Theme.AppCompat"
 		tools:targetApi="31">
 		<activity
