@@ -69,7 +69,9 @@ class DickSettingFragment : PreferenceFragmentCompat() {
 			category("Some Setting") {
 				editText("Change key height (dp)") {
 					key = "key-height"
-					setDefaultValue(20)
+
+					// Object(Any)라곤 하지만? 실제론? Any가 아니다
+					setDefaultValue("20")
 
 					setOnBindEditTextListener { view ->
 						view.inputType = InputType.TYPE_CLASS_NUMBER
