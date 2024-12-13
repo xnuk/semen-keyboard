@@ -14,7 +14,10 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+
+val defaultKeyboardEncoded = Json.encodeToString(defaultKeyboard)
 
 class DickSettingFragment : PreferenceFragmentCompat() {
 	override fun onCreatePreferences(

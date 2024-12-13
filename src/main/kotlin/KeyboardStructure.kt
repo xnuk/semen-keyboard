@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class Command {
-	Backspace
+	Backspace,
+	Enter
 }
 
 @Serializable
@@ -23,6 +24,9 @@ sealed class KeyVal() {
 
 	@Serializable
 	class Cmd(val cmd: Command) : KeyVal()
+
+	@Serializable
+	class Seq(val sequence: List<KeyVal>) : KeyVal()
 }
 
 @Serializable
@@ -35,13 +39,13 @@ data class Key(
 )
 
 @Serializable
-data class Engine(
+data class EngineConfig(
 	val type: String,
 	val param: Map<String, String>,
 )
 
 @Serializable
-data class Keyboard(val engine: Engine, val layers: List<List<List<Key>>>)
+data class Keyboard(val engine: EngineConfig, val layers: List<List<List<Key>>>)
 
 private fun keySimpleRow(values: String): List<Key> {
 	val ret = mutableListOf<Key>()
@@ -52,7 +56,7 @@ private fun keySimpleRow(values: String): List<Key> {
 }
 
 val defaultKeyboard =
-	Keyboard(engine = Engine("direct", mapOf()), layers = listOf(
+	Keyboard(engine = EngineConfig("direct", mapOf()), layers = listOf(
 		listOf(
 			keySimpleRow("1234567890"),
 			mutableListOf<Key>().apply {
@@ -92,7 +96,7 @@ val defaultKeyboard =
 				add(
 					Key(
 						label = "enter",
-						value = KeyVal.Str("\n"),
+						value = KeyVal.Cmd(Command.Enter),
 						size = 1.5f
 					)
 				)
@@ -132,7 +136,7 @@ val defaultKeyboard =
 				add(
 					Key(
 						label = "enter",
-						value = KeyVal.Str("\n"),
+						value = KeyVal.Cmd(Command.Enter),
 						size = 1.5f
 					)
 				)

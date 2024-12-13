@@ -1,86 +1,14 @@
 package kr.xnu.keyboard.semen
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.inputmethodservice.InputMethodService
 import android.view.View
-import android.view.ViewGroup.LayoutParams
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.preference.PreferenceManager
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlin.Int
-import kotlin.math.roundToInt
 
-val defaultKeyboardEncoded = Json.encodeToString(defaultKeyboard)
 const val LAYOUT_KEY = "layout-config"
-val keyValueTag = R.id.key_value
-
-fun keyboardView(
-	context: Context,
-	keyboard: Keyboard,
-	layer: Int = 0,
-	onClick: (msg: KeyVal) -> Unit,
-): View {
-	val colorText = context.getColor(R.color.black)
-	val colorBg = context.getColor(R.color.white)
-	val setting = PreferenceManager.getDefaultSharedPreferences(context)
-
-	val dp = context.resources.displayMetrics.density
-	val keyHeight =
-		(setting.getString("key-height", "")?.toIntOrNull() ?: 20) * dp
-
-	val grid = LinearLayout(context).apply {
-		layoutParams = LinearLayout.LayoutParams(
-			LayoutParams.MATCH_PARENT,
-			LayoutParams.MATCH_PARENT
-		)
-		orientation = LinearLayout.VERTICAL
-
-		setBackgroundColor(colorBg)
-	}
-
-	val onClickListener = View.OnClickListener {
-		val msg = it.getTag(keyValueTag) as? KeyVal
-		if (msg != null) {
-			onClick(msg)
-		}
-	}
-
-	for (keyRow in keyboard.layers[layer]) {
-		val row = LinearLayout(context).apply {
-			layoutParams = LinearLayout.LayoutParams(
-				LayoutParams.MATCH_PARENT,
-				(keyHeight * dp).roundToInt()
-			)
-			orientation = LinearLayout.HORIZONTAL
-		}
-
-		for (key in keyRow) {
-			row.addView(
-				// TODO: reset button theme and apply custom
-				Button(context).apply {
-					text = key.label
-					setTag(keyValueTag, key.value)
-					setOnClickListener(onClickListener)
-					setPadding(0, 0, 0, 0)
-					setBackgroundColor(colorBg)
-					setTextColor(colorText)
-				},
-				LinearLayout.LayoutParams(
-					0, LayoutParams.MATCH_PARENT, key.size
-				),
-			)
-		}
-
-		grid.addView(row)
-	}
-
-	return grid
-}
 
 class SemenKeyboard : InputMethodService() {
 	private var imm: InputMethodManager? = null
@@ -122,6 +50,24 @@ class SemenKeyboard : InputMethodService() {
 						ic.deleteSurroundingText(1, 0)
 					} else {
 						ic.commitText("", 1)
+					}
+				}
+
+				Command.Enter -> {/*
+					currentInputConnection.sendKeyEvent(
+						KeyEvent(
+							KeyEvent.ACTION_DOWN,
+							KeyEvent.KEYCODE_ENTER
+						)
+					)
+					currentInputConnection.sendKeyEvent(
+						KeyEvent(
+							KeyEvent.ACTION_UP,
+							KeyEvent.KEYCODE_ENTER
+						)
+					)*/
+					if (!sendDefaultEditorAction(true)) {
+						ic.commitText("\n", 1)
 					}
 				}
 			}
