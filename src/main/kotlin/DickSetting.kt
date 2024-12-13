@@ -19,6 +19,12 @@ import kotlinx.serialization.json.Json
 
 val defaultKeyboardEncoded = Json.encodeToString(defaultKeyboard)
 
+object ConfigKey {
+	val LAYOUT = PrefKey("layout-config", defaultKeyboardEncoded)
+	val KEY_HEIGHT_DP = PrefKey("key-height", "60")
+	val FONT_SIZE_SP = PrefKey("font-size", "30")
+}
+
 class DickSettingFragment : PreferenceFragmentCompat() {
 	override fun onCreatePreferences(
 		savedInstanceState: Bundle?,
@@ -56,8 +62,7 @@ class DickSettingFragment : PreferenceFragmentCompat() {
 			}
 
 			category("Import/Export") {
-				editText("Edit layout config") {
-					key = LAYOUT_KEY
+				input("Edit layout config", ConfigKey.LAYOUT) {
 					summary =
 						"Copy or paste layout config with JSON-formatted text"
 					setOnBindEditTextListener { view ->
@@ -70,12 +75,14 @@ class DickSettingFragment : PreferenceFragmentCompat() {
 			}
 
 			category("Some Setting") {
-				editText("Change key height (dp)") {
-					key = "key-height"
+				input("Change key height (dp)", ConfigKey.KEY_HEIGHT_DP) {
+					setOnBindEditTextListener { view ->
+						view.inputType = InputType.TYPE_CLASS_NUMBER
+						view.selectAll()
+					}
+				}
 
-					// Object(Any)라곤 하지만? 실제론? Any가 아니다
-					setDefaultValue("20")
-
+				input("Change font size (sp)", ConfigKey.FONT_SIZE_SP) {
 					setOnBindEditTextListener { view ->
 						view.inputType = InputType.TYPE_CLASS_NUMBER
 						view.selectAll()
@@ -116,9 +123,9 @@ class DickSetting : FragmentActivity() {
 	}
 
 	private fun onPrefChange(pref: SharedPreferences, key: String?) {
-		if (key == LAYOUT_KEY) {
-			val config = pref.getString(key, "")?.trim()
-			if (config.isNullOrBlank()) {
+		if (key == ConfigKey.LAYOUT.key) {
+			val config = ConfigKey.LAYOUT.fetch(pref).trim()
+			if (config.isEmpty()) {
 				return
 			}
 

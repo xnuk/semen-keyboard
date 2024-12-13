@@ -60,9 +60,9 @@ val defaultKeyboard =
 		listOf(
 			keySimpleRow("1234567890"),
 			mutableListOf<Key>().apply {
-				add(Key("q", size = 1.5f))
-				addAll(keySimpleRow("wfpbjlu"))
-				add(Key("y", size = 1.5f))
+				// add(Key("q", size = 1.5f))
+				addAll(keySimpleRow("qwfpbjluy;"))
+				// add(Key("y", size = 1.5f))
 			},
 			keySimpleRow("arstgmneio"),
 			mutableListOf<Key>().apply {
@@ -70,7 +70,7 @@ val defaultKeyboard =
 					Key(
 						label = "^",
 						value = KeyVal.OneShot(1),
-						size = 1.5f
+						size = 1f
 					)
 				)
 				addAll(keySimpleRow("zxcdvkh"))
@@ -78,7 +78,7 @@ val defaultKeyboard =
 					Key(
 						label = "<=",
 						value = KeyVal.Cmd(Command.Backspace),
-						size = 1.5f
+						size = 2f
 					)
 				)
 			},
@@ -106,9 +106,9 @@ val defaultKeyboard =
 		listOf(
 			keySimpleRow("1234567890"),
 			mutableListOf<Key>().apply {
-				add(Key("Q", size = 1.5f))
-				addAll(keySimpleRow("WFPBJLU"))
-				add(Key("Y", size = 1.5f))
+				// add(Key("Q", size = 1.5f))
+				addAll(keySimpleRow("QWFPBJLUY;"))
+				// add(Key("Y", size = 1.5f))
 			},
 			keySimpleRow("ARSTGMNEIO"),
 			mutableListOf<Key>().apply {

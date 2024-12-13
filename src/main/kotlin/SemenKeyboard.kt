@@ -8,16 +8,31 @@ import android.widget.Toast
 import androidx.preference.PreferenceManager
 import kotlinx.serialization.json.Json
 
-const val LAYOUT_KEY = "layout-config"
-
 class SemenKeyboard : InputMethodService() {
 	private var imm: InputMethodManager? = null
 	private lateinit var pref: SharedPreferences
-	private var keyboard: Keyboard = defaultKeyboard
+	private var keyboard = defaultKeyboard
+	private var changed = false
+	private val changeListener =
+		SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+			changed = true
+		}
+
+	override fun onCreate() {
+		super.onCreate()
+		imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+		pref = PreferenceManager.getDefaultSharedPreferences(this)
+		pref.registerOnSharedPreferenceChangeListener(changeListener)
+	}
+
+	override fun onDestroy() {
+		pref.unregisterOnSharedPreferenceChangeListener(changeListener)
+		super.onDestroy()
+	}
 
 	private fun getLayoutConfig(): Keyboard {
-		val text = pref.getString(LAYOUT_KEY, "")
-		if (text.isNullOrBlank()) {
+		val text = ConfigKey.LAYOUT.fetch(pref)
+		if (text.isBlank()) {
 			return defaultKeyboard
 		}
 
@@ -31,12 +46,6 @@ class SemenKeyboard : InputMethodService() {
 			).show()
 			return defaultKeyboard
 		}
-	}
-
-	override fun onCreate() {
-		super.onCreate()
-		imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-		pref = PreferenceManager.getDefaultSharedPreferences(this)
 	}
 
 	fun handleEvent(item: KeyVal) {
@@ -53,19 +62,7 @@ class SemenKeyboard : InputMethodService() {
 					}
 				}
 
-				Command.Enter -> {/*
-					currentInputConnection.sendKeyEvent(
-						KeyEvent(
-							KeyEvent.ACTION_DOWN,
-							KeyEvent.KEYCODE_ENTER
-						)
-					)
-					currentInputConnection.sendKeyEvent(
-						KeyEvent(
-							KeyEvent.ACTION_UP,
-							KeyEvent.KEYCODE_ENTER
-						)
-					)*/
+				Command.Enter -> {
 					if (!sendDefaultEditorAction(true)) {
 						ic.commitText("\n", 1)
 					}
@@ -87,5 +84,16 @@ class SemenKeyboard : InputMethodService() {
 	override fun onCreateInputView(): View {
 		keyboard = getLayoutConfig()
 		return keyboardView(this, keyboard) { handleEvent(it) }
+	}
+
+	override fun onShowInputRequested(
+		flags: Int,
+		configChange: Boolean,
+	): Boolean {
+		if (configChange || changed) {
+			setInputView(keyboardView(this, keyboard) { handleEvent(it) })
+			changed = false
+		}
+		return super.onShowInputRequested(flags, configChange)
 	}
 }

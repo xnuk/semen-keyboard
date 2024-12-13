@@ -21,8 +21,8 @@ fun keyboardView(
 	val setting = PreferenceManager.getDefaultSharedPreferences(context)
 
 	val dp = context.resources.displayMetrics.density
-	val keyHeight =
-		(setting.getString("key-height", "")?.toIntOrNull() ?: 20) * dp
+	val keyHeight = ConfigKey.KEY_HEIGHT_DP.fetchFloat(setting)
+	val fontSize = ConfigKey.FONT_SIZE_SP.fetchFloat(setting)
 
 	val grid = LinearLayout(context).apply {
 		layoutParams = LinearLayout.LayoutParams(
@@ -60,6 +60,7 @@ fun keyboardView(
 					setPadding(0, 0, 0, 0)
 					setBackgroundColor(colorBg)
 					setTextColor(colorText)
+					textSize = fontSize
 				},
 				LinearLayout.LayoutParams(
 					0, ViewGroup.LayoutParams.MATCH_PARENT, key.size
