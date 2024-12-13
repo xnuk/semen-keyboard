@@ -39,3 +39,12 @@ dependencies {
 
 	testImplementation(libs.test)
 }
+
+configurations.all {
+	resolutionStrategy.activateDependencyLocking()
+}
+
+dependencyLocking {
+	lockFile = file("$projectDir/gradle.lockfile")
+	lockMode = LockMode.STRICT
+}
