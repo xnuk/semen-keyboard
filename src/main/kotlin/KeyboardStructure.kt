@@ -42,11 +42,10 @@ sealed class EngineDirectKey() {
 		EngineDirectKey()
 }
 
-fun EngineDirectKey.label(): Pair<String, String?> =
-	when (this) {
-		is EngineDirectKey.Str -> Pair(short, long)
-		is EngineDirectKey.Modifier -> Pair("TODO!", null)
-	}
+fun EngineDirectKey.label(): Pair<String?, String?> = when (this) {
+	is EngineDirectKey.Str -> Pair(short, long)
+	is EngineDirectKey.Modifier -> Pair(null, null)
+}
 
 fun EngineDirectKey.style(): Decorative = when (this) {
 	is EngineDirectKey.Str -> style
@@ -89,7 +88,7 @@ class EngineDirectState(
 					key.short
 				}
 				ic.commitText(value)
-				if (layer > 0) {
+				if (layer == 1) {
 					layer = 0
 					onChangeLayer(layer)
 				}
@@ -146,6 +145,68 @@ private fun keySimpleRow(values: String): List<EngineDirectKey> {
 }
 //⇧⌫␣↵⬆
 
+private val backspace = EngineDirectKey.Modifier(
+	EngineDirectModifier.Backspace,
+	style = Decorative(
+		size = 1.5f,
+		icon = R.drawable.backspace,
+		description = "Backspace"
+	)
+)
+
+private val shift = EngineDirectKey.Modifier(
+	EngineDirectModifier.Shift,
+	style = Decorative(
+		size = 1.5f,
+		icon = R.drawable.shift,
+		description = "Shift"
+	)
+)
+
+private val shiftOneshot = EngineDirectKey.Modifier(
+	EngineDirectModifier.Shift,
+	style = Decorative(
+		size = 1.5f,
+		icon = R.drawable.shift_filled,
+		description = "Shifted"
+	)
+)
+
+private val shiftLocked = EngineDirectKey.Modifier(
+	EngineDirectModifier.Shift,
+	style = Decorative(
+		size = 1.5f,
+		icon = R.drawable.shift_lock,
+		description = "Shift locked"
+	)
+)
+
+private val symbol = EngineDirectKey.Modifier(
+	EngineDirectModifier.Symbol,
+	style = Decorative(size = 1.5f)
+)
+
+private val switch = EngineDirectKey.Modifier(
+	EngineDirectModifier.Switch,
+	style = Decorative(size = 1.5f)
+)
+private val space = EngineDirectKey.Modifier(
+	EngineDirectModifier.Space,
+	style = Decorative(
+		size = 2f,
+		icon = R.drawable.space_bar,
+		description = "Space"
+	)
+)
+private val enter = EngineDirectKey.Modifier(
+	EngineDirectModifier.Enter,
+	Decorative(
+		size = 1.5f,
+		icon = R.drawable.keyboard_return,
+		description = "Enter"
+	)
+)
+
 val defaultKeyboard =
 	Keyboard(engine = EngineConfig("direct", mapOf()),
 		keyboard = EngineDirectKeyboard(listOf(
@@ -154,47 +215,16 @@ val defaultKeyboard =
 				keySimpleRow("qwfpbjluy;"),
 				keySimpleRow("arstgmneio"),
 				mutableListOf<EngineDirectKey>().apply {
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Shift,
-							style = Decorative(size = 1.5f)
-						)
-
-					)
 					addAll(keySimpleRow("zxcdvkh"))
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Backspace,
-							style = Decorative(size = 1.5f)
-						)
-					)
+					add(shift)
+					add(backspace)
 				},
 				mutableListOf<EngineDirectKey>().apply {
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Symbol,
-							style = Decorative(size = 1.5f)
-						)
-					)
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Switch,
-							style = Decorative(size = 1.5f)
-						)
-					)
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Space,
-							style = Decorative(size = 2f)
-						)
-					)
+					add(symbol)
+					add(switch)
+					add(space)
 					add(EngineDirectKey.Str(".", "?"))
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Enter,
-							Decorative(size = 1.5f)
-						)
-					)
+					add(enter)
 				}
 			),
 			listOf(
@@ -202,47 +232,35 @@ val defaultKeyboard =
 				keySimpleRow("QWFPBJLUY:"),
 				keySimpleRow("ARSTGMNEIO"),
 				mutableListOf<EngineDirectKey>().apply {
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Shift,
-							style = Decorative(size = 1.5f)
-						)
 
-					)
 					addAll(keySimpleRow("ZXCDVKH"))
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Backspace,
-							style = Decorative(size = 1.5f)
-						)
-					)
+					add(shiftOneshot)
+					add(backspace)
 				},
 				mutableListOf<EngineDirectKey>().apply {
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Symbol,
-							style = Decorative(size = 1.5f)
-						)
-					)
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Switch,
-							style = Decorative(size = 1.5f)
-						)
-					)
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Space,
-							style = Decorative(size = 2f)
-						)
-					)
+					add(symbol)
+					add(switch)
+					add(space)
 					add(EngineDirectKey.Str(".", "?"))
-					add(
-						EngineDirectKey.Modifier(
-							EngineDirectModifier.Enter,
-							style = Decorative(size = 1.5f)
-						)
-					)
+					add(enter)
+				}
+			),
+			listOf(
+				keySimpleRow("1234567890"),
+				keySimpleRow("QWFPBJLUY:"),
+				keySimpleRow("ARSTGMNEIO"),
+				mutableListOf<EngineDirectKey>().apply {
+
+					addAll(keySimpleRow("ZXCDVKH"))
+					add(shiftLocked)
+					add(backspace)
+				},
+				mutableListOf<EngineDirectKey>().apply {
+					add(symbol)
+					add(switch)
+					add(space)
+					add(EngineDirectKey.Str(".", "?"))
+					add(enter)
 				}
 			),
 

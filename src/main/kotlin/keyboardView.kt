@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.preference.PreferenceManager
 import kotlin.math.roundToInt
@@ -51,17 +52,31 @@ fun keyboardView(
 		}
 
 		for (key in keyRow) {
-			row.addView(
-				// TODO: reset button theme and apply custom
+			val style = key.style()
+
+			// TODO: reset button theme and apply custom
+			val view = if (style.icon != null && style.description != null) {
+				ImageButton(context).apply {
+					setImageDrawable(context.getDrawable(style.icon))
+					contentDescription = style.description
+				}
+			} else {
 				Button(context).apply {
 					text = key.label().first
-					setTag(keyValueTag, key)
-					setOnClickListener(onClickListener)
-					setPadding(0, 0, 0, 0)
-					setBackgroundColor(colorBg)
 					setTextColor(colorText)
 					textSize = fontSize
-				},
+				}
+			}
+
+			view.apply {
+				setTag(keyValueTag, key)
+				setOnClickListener(onClickListener)
+				setPadding(0, 0, 0, 0)
+				setBackgroundColor(colorBg)
+			}
+
+			row.addView(
+				view,
 				LinearLayout.LayoutParams(
 					0,
 					ViewGroup.LayoutParams.MATCH_PARENT,
