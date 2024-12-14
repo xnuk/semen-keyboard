@@ -1,5 +1,6 @@
 package kr.xnu.keyboard.semen
 
+import androidx.annotation.DrawableRes
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,34 +10,120 @@ enum class Command {
 }
 
 @Serializable
-sealed class KeyVal() {
-	@Serializable
-	class Str(val str: String) : KeyVal()
+enum class EngineDirectModifier {
+	Backspace, Enter, Space, Symbol, Switch, Shift
+}
 
-	@Serializable
-	class TO(val layer: Int) : KeyVal()
-
-	@Serializable
-	class LT(val short: KeyVal, val long: KeyVal) : KeyVal()
-
-	@Serializable
-	class OneShot(val layer: Int) : KeyVal()
-
-	@Serializable
-	class Cmd(val cmd: Command) : KeyVal()
-
-	@Serializable
-	class Seq(val sequence: List<KeyVal>) : KeyVal()
+enum class ShiftModifier {
+	None, OneShot, Keep
 }
 
 @Serializable
-data class Key(
-	val label: String,
-	val value: KeyVal = KeyVal.Str(label),
-	val subLabel: String? = null,
+data class Decorative(
 	val size: Float = 1f,
-	val options: String? = null,
+	@DrawableRes val icon: Int? = null,
+	val description: String? = null,
 )
+
+@Serializable
+sealed class EngineDirectKey() {
+	@Serializable
+	class Str(
+		val short: String,
+		val long: String? = null,
+		val style: Decorative = Decorative(),
+	) : EngineDirectKey()
+
+	@Serializable
+	class Modifier(
+		val modifier: EngineDirectModifier,
+		val style: Decorative = Decorative(),
+	) :
+		EngineDirectKey()
+}
+
+fun EngineDirectKey.label(): Pair<String, String?> =
+	when (this) {
+		is EngineDirectKey.Str -> Pair(short, long)
+		is EngineDirectKey.Modifier -> Pair("TODO!", null)
+	}
+
+fun EngineDirectKey.style(): Decorative = when (this) {
+	is EngineDirectKey.Str -> style
+	is EngineDirectKey.Modifier -> style
+}
+
+@Serializable
+data class EngineDirectKeyboard(
+	val layers: List<List<List<EngineDirectKey>>>,
+)
+
+interface IcCondom {
+	fun commitText(str: String)
+	fun preeditText(str: String)
+	fun deleteSelectedText(): Boolean
+	fun deleteOneBefore()
+	fun onEnter(): Boolean
+}
+
+interface RunState<T> {
+	fun onClick(key: T, long: Boolean, ic: IcCondom)
+}
+
+class EngineDirectState(
+	private val keyboard: EngineDirectKeyboard,
+	private val onChangeLayer: (layer: Int) -> Int,
+) : RunState<EngineDirectKey> {
+	var layer = 0
+
+	override fun onClick(
+		key: EngineDirectKey,
+		long: Boolean,
+		ic: IcCondom,
+	) {
+		when (key) {
+			is EngineDirectKey.Str -> {
+				val value = if (long && key.long != null) {
+					key.long
+				} else {
+					key.short
+				}
+				ic.commitText(value)
+				if (layer > 0) {
+					layer = 0
+					onChangeLayer(layer)
+				}
+			}
+
+			is EngineDirectKey.Modifier -> {
+				when (key.modifier) {
+					EngineDirectModifier.Backspace -> {
+						if (!ic.deleteSelectedText()) {
+							ic.deleteOneBefore()
+						}
+					}
+
+					EngineDirectModifier.Enter -> {
+						if (!ic.onEnter()) {
+							ic.commitText("\n")
+						}
+					}
+
+					EngineDirectModifier.Space -> {
+						ic.commitText(" ")
+					}
+
+					EngineDirectModifier.Shift -> {
+						layer = (layer + 1) % 3
+						onChangeLayer(layer)
+					}
+
+					else -> {}
+				}
+			}
+		}
+	}
+}
 
 @Serializable
 data class EngineConfig(
@@ -45,101 +132,118 @@ data class EngineConfig(
 )
 
 @Serializable
-data class Keyboard(val engine: EngineConfig, val layers: List<List<List<Key>>>)
+data class Keyboard(
+	val engine: EngineConfig,
+	val keyboard: EngineDirectKeyboard,
+)
 
-private fun keySimpleRow(values: String): List<Key> {
-	val ret = mutableListOf<Key>()
+private fun keySimpleRow(values: String): List<EngineDirectKey> {
+	val ret = mutableListOf<EngineDirectKey>()
 	for (value in values.chars()) {
-		ret.add(Key(value.toChar().toString()))
+		ret.add(EngineDirectKey.Str(value.toChar().toString()))
 	}
 	return ret
 }
+//⇧⌫␣↵⬆
 
 val defaultKeyboard =
-	Keyboard(engine = EngineConfig("direct", mapOf()), layers = listOf(
-		listOf(
-			keySimpleRow("1234567890"),
-			mutableListOf<Key>().apply {
-				// add(Key("q", size = 1.5f))
-				addAll(keySimpleRow("qwfpbjluy;"))
-				// add(Key("y", size = 1.5f))
-			},
-			keySimpleRow("arstgmneio"),
-			mutableListOf<Key>().apply {
-				add(
-					Key(
-						label = "^",
-						value = KeyVal.OneShot(1),
-						size = 1f
-					)
-				)
-				addAll(keySimpleRow("zxcdvkh"))
-				add(
-					Key(
-						label = "<=",
-						value = KeyVal.Cmd(Command.Backspace),
-						size = 2f
-					)
-				)
-			},
-			mutableListOf<Key>().apply {
-				add(Key(label = "기호", value = KeyVal.TO(4), size = 1.5f))
-				add(Key(label = "한영", value = KeyVal.TO(8), size = 1.5f))
-				add(
-					Key(
-						label = "space",
-						value = KeyVal.Str(" "),
-						size = 1.5f
-					)
-				)
-				add(Key("."))
-				add(
-					Key(
-						label = "enter",
-						value = KeyVal.Cmd(Command.Enter),
-						size = 1.5f
-					)
-				)
-			}
-		),
+	Keyboard(engine = EngineConfig("direct", mapOf()),
+		keyboard = EngineDirectKeyboard(listOf(
+			listOf(
+				keySimpleRow("1234567890"),
+				keySimpleRow("qwfpbjluy;"),
+				keySimpleRow("arstgmneio"),
+				mutableListOf<EngineDirectKey>().apply {
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Shift,
+							style = Decorative(size = 1.5f)
+						)
 
-		listOf(
-			keySimpleRow("1234567890"),
-			mutableListOf<Key>().apply {
-				// add(Key("Q", size = 1.5f))
-				addAll(keySimpleRow("QWFPBJLUY;"))
-				// add(Key("Y", size = 1.5f))
-			},
-			keySimpleRow("ARSTGMNEIO"),
-			mutableListOf<Key>().apply {
-				add(Key(label = "^^", value = KeyVal.TO(2), size = 1.5f))
-				addAll(keySimpleRow("ZXCDVKH"))
-				add(
-					Key(
-						label = "<=",
-						value = KeyVal.Cmd(Command.Backspace),
-						size = 1.5f
 					)
-				)
-			},
-			mutableListOf<Key>().apply {
-				add(Key(label = "기호", value = KeyVal.TO(4), size = 1.5f))
-				add(Key(label = "한영", value = KeyVal.TO(8), size = 1.5f))
-				add(
-					Key(
-						label = "space",
-						value = KeyVal.Str(" "),
-						size = 1.5f
+					addAll(keySimpleRow("zxcdvkh"))
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Backspace,
+							style = Decorative(size = 1.5f)
+						)
 					)
-				)
-				add(Key("."))
-				add(
-					Key(
-						label = "enter",
-						value = KeyVal.Cmd(Command.Enter),
-						size = 1.5f
+				},
+				mutableListOf<EngineDirectKey>().apply {
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Symbol,
+							style = Decorative(size = 1.5f)
+						)
 					)
-				)
-			}
-		)
-	))
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Switch,
+							style = Decorative(size = 1.5f)
+						)
+					)
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Space,
+							style = Decorative(size = 2f)
+						)
+					)
+					add(EngineDirectKey.Str(".", "?"))
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Enter,
+							Decorative(size = 1.5f)
+						)
+					)
+				}
+			),
+			listOf(
+				keySimpleRow("1234567890"),
+				keySimpleRow("QWFPBJLUY:"),
+				keySimpleRow("ARSTGMNEIO"),
+				mutableListOf<EngineDirectKey>().apply {
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Shift,
+							style = Decorative(size = 1.5f)
+						)
+
+					)
+					addAll(keySimpleRow("ZXCDVKH"))
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Backspace,
+							style = Decorative(size = 1.5f)
+						)
+					)
+				},
+				mutableListOf<EngineDirectKey>().apply {
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Symbol,
+							style = Decorative(size = 1.5f)
+						)
+					)
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Switch,
+							style = Decorative(size = 1.5f)
+						)
+					)
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Space,
+							style = Decorative(size = 2f)
+						)
+					)
+					add(EngineDirectKey.Str(".", "?"))
+					add(
+						EngineDirectKey.Modifier(
+							EngineDirectModifier.Enter,
+							style = Decorative(size = 1.5f)
+						)
+					)
+				}
+			),
+
+			)))

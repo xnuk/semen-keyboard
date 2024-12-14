@@ -14,7 +14,7 @@ fun keyboardView(
 	context: Context,
 	keyboard: Keyboard,
 	layer: Int = 0,
-	onClick: (msg: KeyVal) -> Unit,
+	onClick: (msg: EngineDirectKey) -> Unit,
 ): View {
 	val colorText = context.getColor(R.color.white)
 	val colorBg = context.getColor(R.color.black)
@@ -35,13 +35,13 @@ fun keyboardView(
 	}
 
 	val onClickListener = View.OnClickListener {
-		val msg = it.getTag(keyValueTag) as? KeyVal
+		val msg = it.getTag(keyValueTag) as? EngineDirectKey
 		if (msg != null) {
 			onClick(msg)
 		}
 	}
 
-	for (keyRow in keyboard.layers[layer]) {
+	for (keyRow in keyboard.keyboard.layers[layer]) {
 		val row = LinearLayout(context).apply {
 			layoutParams = LinearLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
@@ -54,8 +54,8 @@ fun keyboardView(
 			row.addView(
 				// TODO: reset button theme and apply custom
 				Button(context).apply {
-					text = key.label
-					setTag(keyValueTag, key.value)
+					text = key.label().first
+					setTag(keyValueTag, key)
 					setOnClickListener(onClickListener)
 					setPadding(0, 0, 0, 0)
 					setBackgroundColor(colorBg)
@@ -63,7 +63,9 @@ fun keyboardView(
 					textSize = fontSize
 				},
 				LinearLayout.LayoutParams(
-					0, ViewGroup.LayoutParams.MATCH_PARENT, key.size
+					0,
+					ViewGroup.LayoutParams.MATCH_PARENT,
+					key.style().size
 				),
 			)
 		}

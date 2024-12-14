@@ -8,11 +8,12 @@ import android.widget.Toast
 import androidx.preference.PreferenceManager
 import kotlinx.serialization.json.Json
 
-class SemenKeyboard : InputMethodService() {
+class SemenKeyboard : InputMethodService(), IcCondom {
 	private var imm: InputMethodManager? = null
 	private lateinit var pref: SharedPreferences
 	private var keyboard = defaultKeyboard
 	private var changed = false
+	private var state: EngineDirectState? = null
 	private val changeListener =
 		SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
 			changed = true
@@ -48,41 +49,16 @@ class SemenKeyboard : InputMethodService() {
 		}
 	}
 
-	fun handleEvent(item: KeyVal) {
-		val ic = currentInputConnection
-		when (item) {
-			is KeyVal.Str -> ic.commitText(item.str, 1)
-			is KeyVal.Cmd -> when (item.cmd) {
-				Command.Backspace -> {
-					val selected = ic.getSelectedText(0)
-					if (selected == null || selected.isEmpty()) {
-						ic.deleteSurroundingText(1, 0)
-					} else {
-						ic.commitText("", 1)
-					}
-				}
-
-				Command.Enter -> {
-					if (!sendDefaultEditorAction(true)) {
-						ic.commitText("\n", 1)
-					}
-				}
-			}
-
-			is KeyVal.TO -> {
-				setInputView(
-					keyboardView(this, keyboard, item.layer) {
-						handleEvent(it)
-					}
-				)
-			}
-
-			else -> {}
-		}
+	fun handleEvent(item: EngineDirectKey) {
+		state?.onClick(item, false, this)
 	}
 
 	override fun onCreateInputView(): View {
 		keyboard = getLayoutConfig()
+		state = EngineDirectState(keyboard.keyboard) {
+			setInputView(keyboardView(this, keyboard, it) { handleEvent(it) })
+			it
+		}
 		return keyboardView(this, keyboard) { handleEvent(it) }
 	}
 
@@ -91,9 +67,36 @@ class SemenKeyboard : InputMethodService() {
 		configChange: Boolean,
 	): Boolean {
 		if (configChange || changed) {
-			setInputView(keyboardView(this, keyboard) { handleEvent(it) })
+			setInputView(onCreateInputView())
 			changed = false
 		}
 		return super.onShowInputRequested(flags, configChange)
 	}
+
+	override fun commitText(str: String) {
+		currentInputConnection.commitText(str, 1)
+	}
+
+	override fun preeditText(str: String) {
+		currentInputConnection.setComposingText(str, 1)
+	}
+
+	override fun deleteSelectedText(): Boolean {
+		val ic = currentInputConnection
+
+		val selected = ic.getSelectedText(0)
+		if (selected == null || selected.isEmpty()) {
+			return false
+		}
+
+		ic.commitText("", 1)
+		return true
+	}
+
+	override fun deleteOneBefore() {
+		currentInputConnection.deleteSurroundingText(1, 0)
+	}
+
+	override fun onEnter(): Boolean =
+		sendDefaultEditorAction(true)
 }
