@@ -52,21 +52,22 @@ fun keyboardView(
 		}
 
 		for (key in keyRow) {
-			val style = key.style()
 
 			// TODO: reset button theme and apply custom
-			val view = if (style.icon != null && style.description != null) {
-				ImageButton(context).apply {
-					setImageDrawable(context.getDrawable(style.icon))
-					contentDescription = style.description
+			val view = when (key) {
+				is EngineDirectKey.Modifier -> ImageButton(context).apply {
+					val (icon, desc) = key.modifier.icon()
+					setImageDrawable(context.getDrawable(icon))
+					contentDescription = desc
 				}
-			} else {
-				Button(context).apply {
-					text = key.label().first
+
+				is EngineDirectKey.Str -> Button(context).apply {
+					text = key.short
 					setTextColor(colorText)
 					textSize = fontSize
 				}
 			}
+
 
 			view.apply {
 				setTag(keyValueTag, key)
