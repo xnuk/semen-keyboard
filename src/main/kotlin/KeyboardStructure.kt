@@ -2,6 +2,9 @@ package kr.xnu.keyboard.semen
 
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.annotation.ColorInt
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,12 +20,14 @@ fun EngineDirectModifier.icon(): Pair<Int, String> =
 		EngineDirectModifier.Enter -> Pair(R.drawable.keyboard_return, "Enter")
 		EngineDirectModifier.Space -> Pair(R.drawable.space_bar, "Space")
 
-		// TODO: is this correct?
-		EngineDirectModifier.Shift -> Pair(R.drawable.shift, "Shift")
+		EngineDirectModifier.Shift -> Pair(R.drawable.shift, "Shift is off")
 		EngineDirectModifier.ShiftLock ->
-			Pair(R.drawable.shift_filled, "Shift lock")
+			Pair(R.drawable.shift_filled, "Shift is on")
 
-		EngineDirectModifier.Unshift -> Pair(R.drawable.shift_lock, "Unshift")
+		EngineDirectModifier.Unshift -> Pair(
+			R.drawable.shift_lock,
+			"Shift is locked"
+		)
 
 		// TODO
 		EngineDirectModifier.Switch -> Pair(R.drawable.xnuk_rainbow, "Switch")
@@ -54,6 +59,35 @@ sealed class EngineDirectKey() {
 		val style: Decorative = Decorative(),
 	) :
 		EngineDirectKey()
+}
+
+fun EngineDirectKey.view(
+	context: Context,
+	@ColorInt colorText: Int,
+	@ColorInt colorBg: Int,
+): View {
+
+	// TODO: reset button theme and apply custom
+	val view = when (this) {
+		is EngineDirectKey.Modifier -> {
+			val (icon, desc) = modifier.icon()
+			KeyView(context, icon, desc)
+		}
+
+		is EngineDirectKey.Str -> {
+			KeyView(context, short, long)
+		}
+	}
+
+
+	return view.also {
+		it.setTag(keyValueTag, this)
+		it.layoutParams = LinearLayout.LayoutParams(
+			0,
+			ViewGroup.LayoutParams.MATCH_PARENT,
+			style().size
+		)
+	}
 }
 
 fun EngineDirectKey.label(): Pair<String?, String?> = when (this) {

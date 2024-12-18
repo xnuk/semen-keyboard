@@ -3,8 +3,6 @@ package kr.xnu.keyboard.semen
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.preference.PreferenceManager
 import kotlin.math.roundToInt
@@ -22,7 +20,7 @@ fun keyboardView(
 
 	val dp = context.resources.displayMetrics.density
 	val keyHeight = ConfigKey.KEY_HEIGHT_DP.fetchFloat(setting)
-	val fontSize = ConfigKey.FONT_SIZE_SP.fetchFloat(setting)
+	ConfigKey.FONT_SIZE_SP.fetchFloat(setting)
 
 	val grid = LinearLayout(context).apply {
 		layoutParams = LinearLayout.LayoutParams(
@@ -51,36 +49,15 @@ fun keyboardView(
 		}
 
 		for (key in keyRow) {
-			// TODO: reset button theme and apply custom
-			val view = when (key) {
-				is EngineDirectKey.Modifier -> ImageButton(context).apply {
-					val (icon, desc) = key.modifier.icon()
-					setImageDrawable(context.getDrawable(icon))
-					contentDescription = desc
-				}
-
-				is EngineDirectKey.Str -> Button(context).apply {
-					text = key.short
-					setTextColor(colorText)
-					textSize = fontSize
-				}
+			val k = key.view(context, colorText, colorBg).also {
+				it.setOnClickListener(onClickListener)
 			}
-
-
-			view.apply {
-				setTag(keyValueTag, key)
-				setOnClickListener(onClickListener)
-				setPadding(0, 0, 0, 0)
-				setBackgroundColor(colorBg)
-			}
-
 			row.addView(
-				view,
-				LinearLayout.LayoutParams(
+				k, LinearLayout.LayoutParams(
 					0,
 					ViewGroup.LayoutParams.MATCH_PARENT,
 					key.style().size
-				),
+				)
 			)
 		}
 
