@@ -13,8 +13,7 @@ val keyValueTag = R.id.key_value
 
 fun keyboardView(
 	context: Context,
-	keyboard: Keyboard,
-	layer: Int = 0,
+	keyboard: List<List<EngineDirectKey>>,
 	onClick: (msg: EngineDirectKey) -> Unit,
 ): View {
 	val colorText = context.getColor(R.color.white)
@@ -42,7 +41,7 @@ fun keyboardView(
 		}
 	}
 
-	for (keyRow in keyboard.keyboard.layers[layer]) {
+	for (keyRow in keyboard) {
 		val row = LinearLayout(context).apply {
 			layoutParams = LinearLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
@@ -52,7 +51,6 @@ fun keyboardView(
 		}
 
 		for (key in keyRow) {
-
 			// TODO: reset button theme and apply custom
 			val view = when (key) {
 				is EngineDirectKey.Modifier -> ImageButton(context).apply {

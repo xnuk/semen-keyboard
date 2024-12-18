@@ -49,17 +49,11 @@ class SemenKeyboard : InputMethodService(), IcCondom {
 		}
 	}
 
-	fun handleEvent(item: EngineDirectKey) {
-		state?.onClick(item, false, this)
-	}
-
 	override fun onCreateInputView(): View {
 		keyboard = getLayoutConfig()
-		state = EngineDirectState(keyboard.keyboard) {
-			setInputView(keyboardView(this, keyboard, it) { handleEvent(it) })
-			it
-		}
-		return keyboardView(this, keyboard) { handleEvent(it) }
+		val state = EngineDirectState(keyboard.keyboard, this)
+		this.state = state
+		return state.render(this)
 	}
 
 	override fun onShowInputRequested(
@@ -99,4 +93,8 @@ class SemenKeyboard : InputMethodService(), IcCondom {
 
 	override fun onEnter(): Boolean =
 		sendDefaultEditorAction(true)
+
+	override fun onRenderListener() {
+		state?.also { setInputView(it.render(this)) }
+	}
 }

@@ -1,12 +1,8 @@
 package kr.xnu.keyboard.semen
 
+import android.content.Context
+import android.view.View
 import kotlinx.serialization.Serializable
-
-@Serializable
-enum class Command {
-	Backspace,
-	Enter
-}
 
 @Serializable
 enum class EngineDirectModifier {
@@ -81,22 +77,28 @@ interface IcCondom {
 	fun deleteSelectedText(): Boolean
 	fun deleteOneBefore()
 	fun onEnter(): Boolean
+	fun onRenderListener()
 }
 
-interface RunState<T> {
-	fun onClick(key: T, long: Boolean, ic: IcCondom)
+interface RunState<Key> {
+	fun onClick(key: Key, long: Boolean)
+	fun render(context: Context): View
+	val ic: IcCondom
 }
 
 class EngineDirectState(
 	private val keyboard: EngineDirectKeyboard,
-	private val onChangeLayer: (layer: Int) -> Int,
-) : RunState<EngineDirectKey> {
-	var layer = 0
+	override val ic: IcCondom,
+
+	) : RunState<EngineDirectKey> {
+	var layer: Int = 0
+
+	override fun render(context: Context): View =
+		keyboardView(context, keyboard.layers[layer]) { onClick(it, false) }
 
 	override fun onClick(
 		key: EngineDirectKey,
 		long: Boolean,
-		ic: IcCondom,
 	) {
 		when (key) {
 			is EngineDirectKey.Str -> {
@@ -108,7 +110,7 @@ class EngineDirectState(
 				ic.commitText(value)
 				if (layer == 1) {
 					layer = 0
-					onChangeLayer(layer)
+					ic.onRenderListener()
 				}
 			}
 
@@ -132,22 +134,26 @@ class EngineDirectState(
 
 					EngineDirectModifier.Shift -> {
 						layer = 1
-						onChangeLayer(layer)
+						ic.onRenderListener()
 					}
 
 					EngineDirectModifier.ShiftLock -> {
 						layer = 2
-						onChangeLayer(layer)
+						ic.onRenderListener()
 					}
 
 					EngineDirectModifier.Unshift -> {
 						layer = 0
-						onChangeLayer(layer)
+						ic.onRenderListener()
 					}
 
 					EngineDirectModifier.Switch -> {
-						layer = 3
-						onChangeLayer(layer)
+						layer = if (layer > 0) {
+							0
+						} else {
+							3
+						}
+						ic.onRenderListener()
 					}
 
 					else -> {}

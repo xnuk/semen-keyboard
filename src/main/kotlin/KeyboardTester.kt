@@ -10,7 +10,7 @@ class KeyboardTester : ComponentActivity() {
 	private var toastBefore: Toast? = null
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		val k = keyboardView(this, defaultKeyboard) {
+		val k = keyboardView(this, defaultKeyboard.keyboard.layers[0]) {
 			toastBefore?.cancel()
 			val t = Toast.makeText(this, "$it", Toast.LENGTH_SHORT)
 			t.show()
