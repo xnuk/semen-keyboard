@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.ColorInt
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -41,10 +42,6 @@ fun EngineDirectModifier.icon(): Pair<Int, String> =
 
 	}
 
-enum class ShiftModifier {
-	None, OneShot, Keep
-}
-
 @Serializable
 data class Decorative(
 	val size: Float = 1f,
@@ -53,6 +50,7 @@ data class Decorative(
 @Serializable
 sealed class EngineDirectKey() {
 	@Serializable
+	@SerialName("str")
 	class Str(
 		val short: String,
 		val long: String? = null,
@@ -60,6 +58,7 @@ sealed class EngineDirectKey() {
 	) : EngineDirectKey()
 
 	@Serializable
+	@SerialName("modifier")
 	class Modifier(
 		val modifier: EngineDirectModifier,
 		val style: Decorative = Decorative(),
