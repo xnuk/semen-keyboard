@@ -29,9 +29,15 @@ fun EngineDirectModifier.icon(): Pair<Int, String> =
 			"Shift is locked"
 		)
 
-		// TODO
-		EngineDirectModifier.Switch -> Pair(R.drawable.xnuk_rainbow, "Switch")
-		EngineDirectModifier.Symbol -> Pair(R.drawable.xnuk_rainbow, "Symbol")
+		EngineDirectModifier.Switch -> Pair(
+			R.drawable.language,
+			"Switch language"
+		)
+
+		EngineDirectModifier.Symbol -> Pair(
+			R.drawable.emoji,
+			"Symbol and Emoji"
+		)
 
 	}
 
