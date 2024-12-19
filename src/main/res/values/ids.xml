@@ -2,4 +2,5 @@
 <resources>
 	<item name="frame" type="id" />
 	<item name="key_value" type="id" />
+	<item name="keyboard" type="id" />
 </resources>
